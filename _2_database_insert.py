@@ -14,14 +14,14 @@ class SQL_insert:
         self.df = df
         self.engine = engine
         
-    def database_insert(self, transform_needed = True) -> None:
+    def database_insert(self) -> None:
         print('Start!')
         
         # Transform and process the DataFrame based on data from stockdataextraction class
         df = self.Transform()
         
         #get current existing data
-        existing_data = pd.read_sql(f'SELECT * FROM {self.tblname}', self.engine)
+        existing_data = pd.read_sql(f'SELECT ticker, datetime FROM {self.tblname}', self.engine)
 
         #Horrible readability syntax... but it just applying rowwise tuple check between both dfs. massive room for improvement.  
         new_data = df[~df[['ticker', 'datetime']].apply(tuple, axis = 1).isin(existing_data[['ticker', 'datetime']].apply(tuple, axis = 1))]

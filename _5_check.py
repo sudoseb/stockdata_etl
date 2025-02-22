@@ -7,8 +7,20 @@ import matplotlib.pyplot as plt
 
 # Assuming you already have a DataFrame `df` with columns: datetime, ticker, tickertype
 # Filter for 'Stock' tickertype (as per your input)
-df = df[['ticker','tickertype', 'datetime']]
+df = df[['ticker', 'datetime']]
 
+
+# Extract date from timestamp
+df['trade_date'] = df['datetime'].dt.date
+
+# Find duplicates where a ticker-date pair has multiple unique prices
+duplicates = df.groupby(['ticker', 'datetime'])['stockprice'].nunique().reset_index()
+
+# Filter cases where multiple prices exist
+duplicates = duplicates[duplicates['price'] > 1]
+
+print(duplicates)
+'''
 # Ensure datetime is in datetime format
 df['datetime'] = pd.to_datetime(df['datetime'])
 
@@ -30,5 +42,6 @@ plt.xticks(rotation=45)
 plt.grid(True)
 plt.show()
 
+'''
 
 
