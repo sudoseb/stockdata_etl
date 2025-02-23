@@ -15,19 +15,21 @@ class SQL_insert:
         self.engine = engine
         
     def database_insert(self) -> None:
-        print('Start!')
+        print('Start: Transforming')
         
         # Transform and process the DataFrame based on data from stockdataextraction class
         df = self.Transform()
         
+        print('Start: Checking for duplicates!')
         #get current existing data
         existing_data = pd.read_sql(f'SELECT ticker, datetime FROM {self.tblname}', self.engine)
 
         #Horrible readability syntax... but it just applying rowwise tuple check between both dfs. massive room for improvement.  
         new_data = df[~df[['ticker', 'datetime']].apply(tuple, axis = 1).isin(existing_data[['ticker', 'datetime']].apply(tuple, axis = 1))]
-
+        
         # If new data exists, append it to the SQL table
         if not new_data.empty:
+            print('Start: Inserting')
             new_data = new_data.dropna()  # Remove any rows with NaN values
             new_data.to_sql(self.tblname, self.engine, schema='dbo', if_exists='append', index=False)
             print(f'{len(new_data)} new rows added to {self.tblname}.')
@@ -87,7 +89,8 @@ class SQL_insert:
             self.df['datetime'] = self.df['datetime'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
         else: 
             self.df = self.df.rename(columns = {'Datetime':'datetime'})
-
+        self.df['datetime'] = pd.to_datetime(self.df['datetime']).dt.tz_localize(None).dt.strftime('%Y-%m-%d %H:%M:%S')
+        
         df_unpivoted = pd.melt(self.df, id_vars=['datetime'], var_name='stockname', value_name='stockprice')
         df_unpivoted['ticker'] = df_unpivoted['stockname'].str.replace('.ST', '').str.replace('-','_')
         df_unpivoted = df_unpivoted.ffill()

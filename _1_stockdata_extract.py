@@ -6,9 +6,9 @@ import re
 
 class StockDataExtraction:
     '''
-    Extracting data from static file 
+    Extracting data from static file, screener and
     '''
-    def __init__(self, start, end, freq='15m', CryptoCount=200,metric='Adj Close', tickerlist= []) -> None:
+    def __init__(self, start, end, freq='15m', CryptoCount=200,metric='Close', tickerlist= []) -> None:
         self.start = start
         self.end = end
         self.freq = freq
