@@ -2,10 +2,9 @@ from sqlalchemy import create_engine, text
 import pandas as pd
 class Database:
     '''
-    Takes database params and can return both engine for sqlalchemy, or a df based on query from db.
-    CANNOT CREATE OR ALTER TABLES, JUST SELECTS.
+    Takes database params and can return both engine for sqlalchemy, return a df based on query from db or execute a sql query.
     '''
-    def __init__(self, driver='ODBC Driver 17 for SQL Server', server='local', database='master',table='stockdata', sql_query='*') -> None:
+    def __init__(self, driver='{ODBC Driver 17 for SQL Server}', server='local', database='master',table='PROD_stockdata', sql_query='*') -> None:
         self.driver = driver
         self.server = server
         self.database = database
